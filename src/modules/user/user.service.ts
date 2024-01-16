@@ -5,19 +5,30 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
 import { UserRegisterOutputDto } from './dto/user-register-output.dto';
+import { PrismaService } from '../../db/prisma/prisma.service';
+import { AccountService } from '../account/account.service';
+import { Currency } from '../account/dto/create-account.dto';
 
 @Injectable()
 export class UserService {
-    constructor(private userRepository: UserRepository) {}
+    constructor(
+        private userRepository: UserRepository,
+        private prisma: PrismaService,
+        private accountService: AccountService) {}
     async register(user: UserRegisterInputDto) {
         try {
             const existedUser = await this.userRepository.getUserByEmail(user.email);
             if (existedUser) throw new ConflictException('User already exist');
 
             const hashedPassword = await bcrypt.hash(user.password, 10);
-            const registeredUser = await this.userRepository.register(uuidv4(), user.email, hashedPassword);
 
-            return plainToClass(UserRegisterOutputDto, { email: registeredUser.email });
+            return this.prisma.$transaction(async () => {
+                const registeredUser = await this.userRepository.register(uuidv4(), user.email, hashedPassword);
+
+                await this.accountService.createAccount({ userId: registeredUser.id, balance: 0, currency: Currency.RUB });
+
+                return plainToClass(UserRegisterOutputDto, { email: registeredUser.email });
+            });
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
