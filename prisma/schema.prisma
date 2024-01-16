@@ -34,6 +34,8 @@ model Account {
   companyId  String?
   company    Company? @relation(fields: [companyId], references: [id])
 
+  bankCards   AccountBankCard[]
+
   user     User     @relation(fields: [userId], references: [id])
 
   @@map("accounts")
@@ -46,4 +48,25 @@ model Company {
   accounts  Account[]
 
   @@map("companies")
+}
+
+model BankCard {
+  id        String   @id @default(uuid())
+  cardNumber String @unique
+  expiryDate String
+  cvv        String
+
+  accounts AccountBankCard[]
+
+  @@map("bank_cards")
+}
+
+model AccountBankCard {
+  account     Account          @relation(fields: [accountId], references: [id])
+  accountId   String
+  bankCard    BankCard         @relation(fields: [bankCardId], references: [id])
+  bankCardId  String
+
+  @@id([accountId, bankCardId])
+  @@map("account_bank_cards")
 }
