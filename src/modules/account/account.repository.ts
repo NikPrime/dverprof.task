@@ -24,4 +24,14 @@ export class AccountRepository {
             },
         });
     }
+
+    update(id: string, amount: number, increase: boolean) {
+        const balanceAction = increase ? { increment: amount } : { decrement: amount };
+        return this.prisma.account.update({
+            where: { id },
+            data: {
+                balance: balanceAction,
+            },
+        });
+    }
 }
