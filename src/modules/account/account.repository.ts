@@ -34,4 +34,22 @@ export class AccountRepository {
             },
         });
     }
+
+    getById(id: string) {
+        return this.prisma.account.findUnique({
+            where: { id },
+            include: {
+                bankCards: {
+                    select: {
+                        bankCard: {
+                            select: {
+                                cardNumber: true,
+                            },
+                        },
+                    },
+                },
+                company: true,
+            },
+        });
+    }
 }

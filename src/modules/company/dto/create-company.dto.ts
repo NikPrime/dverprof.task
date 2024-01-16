@@ -1,16 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateCompanyDto {
     @ApiProperty()
     @IsUUID()
+    @IsNotEmpty()
     accountId: string;
 
     @ApiProperty()
     @IsString()
+    @IsNotEmpty()
     name: string;
 
     @ApiProperty()
     @IsString()
+    @IsNotEmpty()
     checkingAccount: string;
 }
