@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateCompanyDto } from './dto/create-company.dto';
+import { CreateCompanyInputDto } from './dto/create-company-input.dto';
 import { CompanyService } from './company.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CompanyDto } from './dto/company.dto';
+import { CreateCompanyOutputDto } from './dto/create-company-output.dto';
+import { GetCompanyByNameOutputDto } from './dto/get-company-by-name-output.dto';
 
 @ApiTags('Company')
 @Controller('company')
@@ -16,10 +17,10 @@ export class CompanyController {
     @ApiResponse({
         status: 200,
         description: 'create company success',
-        type: CreateCompanyDto,
+        type: CreateCompanyOutputDto,
     })
     @Post()
-    async createCompany(@Body() createCompany: CreateCompanyDto) {
+    async createCompany(@Body() createCompany: CreateCompanyInputDto) {
         return this.companyService.createCompany(createCompany);
     }
 
@@ -30,7 +31,7 @@ export class CompanyController {
     @ApiResponse({
         status: 200,
         description: 'get company by name',
-        type: CompanyDto,
+        type: GetCompanyByNameOutputDto,
     })
     @Get(':name')
     async getCompanyByName(@Param('name') name: string) {

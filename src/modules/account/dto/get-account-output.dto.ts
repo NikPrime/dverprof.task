@@ -8,6 +8,11 @@ export class GetAccountOutputDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsUUID()
+    id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
     userId: string;
 
     @ApiProperty()
@@ -23,6 +28,6 @@ export class GetAccountOutputDto {
     @ApiProperty({ type: CompanyDto })
     company: CompanyDto;
 
-    @ApiProperty({ type: CardDto })
-    card: CardDto;
+    @ApiProperty({ type: [CardDto] })
+    cards: CardDto[];
 }

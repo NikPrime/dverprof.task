@@ -11,7 +11,7 @@ export class CreateCardInputDto {
     @ApiProperty()
     @IsNumericString()
     @IsNotEmpty()
-    @Length(12, 12)
+    @Length(16, 16)
     cardNumber: string;
 
     @ApiProperty()

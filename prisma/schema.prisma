@@ -46,7 +46,7 @@ model Company {
   name      String   @unique
   checkingAccount   String
   accounts  Account[]
-
+  invoices  Invoice[]
   @@map("companies")
 }
 
@@ -69,4 +69,24 @@ model AccountBankCard {
 
   @@id([accountId, bankCardId])
   @@map("account_bank_cards")
+}
+
+enum InvoiceStatus {
+  WAITING
+  PAID
+  CANCELED
+}
+
+model Invoice {
+  id           String   @id @default(uuid())
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id])
+  amount       Float
+  currency     Currency
+  issuedDate   DateTime
+  dueDate      DateTime
+  status       InvoiceStatus
+  paymentDetails String?
+
+  @@map("invoice")
 }

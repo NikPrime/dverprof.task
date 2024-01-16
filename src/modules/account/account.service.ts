@@ -4,8 +4,9 @@ import { AccountRepository } from './account.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
 import { PrismaService } from '../../db/prisma/prisma.service';
-import { ChangeAccountBalanceDto } from './dto/change-account-balance.dto';
+import { ChangeAccountBalanceInputDto } from './dto/change-account-balance-input.dto';
 import { GetAccountOutputDto } from './dto/get-account-output.dto';
+import { ChangeAccountBalanceOutputDto } from './dto/change-account-balance-output.dto';
 
 @Injectable()
 export class AccountService {
@@ -26,7 +27,7 @@ export class AccountService {
         }
     }
 
-    async debitAccount(debitAccount: ChangeAccountBalanceDto) {
+    async debitAccount(debitAccount: ChangeAccountBalanceInputDto) {
         const { userId, amount, currency } = debitAccount;
 
         return this.prisma.$transaction(async () => {
@@ -40,7 +41,7 @@ export class AccountService {
 
             const updatedAccount = await this.accountRepository.update(account.id, amount, false);
 
-            return plainToClass(ChangeAccountBalanceDto, {
+            return plainToClass(ChangeAccountBalanceOutputDto, {
                 userId: updatedAccount.userId,
                 balance: updatedAccount.balance,
                 currency: updatedAccount.currency,
@@ -48,7 +49,7 @@ export class AccountService {
         });
     }
 
-    async topUpAccount(topUpAccount: ChangeAccountBalanceDto) {
+    async topUpAccount(topUpAccount: ChangeAccountBalanceInputDto) {
         const { userId, amount, currency } = topUpAccount;
 
         return this.prisma.$transaction(async () => {
@@ -59,7 +60,7 @@ export class AccountService {
 
             const updatedAccount = await this.accountRepository.update(account.id, amount, true);
 
-            return plainToClass(ChangeAccountBalanceDto, {
+            return plainToClass(ChangeAccountBalanceOutputDto, {
                 userId: updatedAccount.userId,
                 balance: updatedAccount.balance,
                 currency: updatedAccount.currency,
@@ -77,8 +78,17 @@ export class AccountService {
                 userId: existedAccount.userId,
                 balance: existedAccount.balance,
                 currency: existedAccount.currency,
-                company: existedAccount.company,
-                bankCards: existedAccount.bankCards,
+                company: existedAccount.company
+                    ? {
+                          name: existedAccount.company.name,
+                          checkingAccount: existedAccount.company.checkingAccount,
+                      }
+                    : null,
+                cards: existedAccount.bankCards
+                    ? existedAccount.bankCards.map((card) => ({
+                          cardNumber: card.bankCard,
+                      }))
+                    : [],
             });
         } catch (error) {
             throw new InternalServerErrorException(error);
