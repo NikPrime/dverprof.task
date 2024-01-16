@@ -31,7 +31,19 @@ model Account {
   balance  Float    @default(0)
   currency Currency
 
+  companyId  String?
+  company    Company? @relation(fields: [companyId], references: [id])
+
   user     User     @relation(fields: [userId], references: [id])
 
   @@map("accounts")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  checkingAccount   String
+  accounts  Account[]
+
+  @@map("companies")
 }
