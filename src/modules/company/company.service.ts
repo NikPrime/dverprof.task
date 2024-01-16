@@ -1,6 +1,4 @@
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { PrismaService } from '../../db/prisma/prisma.service';
-import { AccountService } from '../account/account.service';
 import { CompanyRepository } from './company.repository';
 import { plainToClass } from 'class-transformer';
 import { CreateAccountDto } from '../account/dto/create-account.dto';
