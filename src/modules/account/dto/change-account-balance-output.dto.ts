@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsPositive, IsUUID, Min } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsPositive, IsUUID } from 'class-validator';
 import { Currency } from './create-account.dto';
-
-export class ChangeAccountBalanceDto {
+export class ChangeAccountBalanceOutputDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsUUID()
@@ -12,7 +11,7 @@ export class ChangeAccountBalanceDto {
     @IsPositive()
     @IsNotEmpty()
     @IsNumber()
-    amount: number;
+    balance: number;
 
     @ApiProperty()
     @IsNotEmpty()

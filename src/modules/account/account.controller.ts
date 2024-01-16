@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ChangeAccountBalanceDto } from './dto/change-account-balance.dto';
+import { ChangeAccountBalanceInputDto } from './dto/change-account-balance-input.dto';
 import { AccountService } from './account.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetAccountOutputDto } from './dto/get-account-output.dto';
+import { ChangeAccountBalanceOutputDto } from './dto/change-account-balance-output.dto';
 
 @ApiTags('Account')
 @Controller('account')
@@ -16,10 +17,10 @@ export class AccountController {
     @ApiResponse({
         status: 200,
         description: 'Debit account',
-        type: ChangeAccountBalanceDto,
+        type: ChangeAccountBalanceOutputDto,
     })
     @Post('debit')
-    async debitAccount(@Body() debitAccountDto: ChangeAccountBalanceDto) {
+    async debitAccount(@Body() debitAccountDto: ChangeAccountBalanceInputDto) {
         return this.accountService.debitAccount(debitAccountDto);
     }
 
@@ -30,10 +31,10 @@ export class AccountController {
     @ApiResponse({
         status: 200,
         description: 'Top up account success',
-        type: ChangeAccountBalanceDto,
+        type: ChangeAccountBalanceOutputDto,
     })
     @Post('topup')
-    async topUpAccount(@Body() topUpAccountDto: ChangeAccountBalanceDto) {
+    async topUpAccount(@Body() topUpAccountDto: ChangeAccountBalanceInputDto) {
         return this.accountService.topUpAccount(topUpAccountDto);
     }
 

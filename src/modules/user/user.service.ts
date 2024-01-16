@@ -8,7 +8,6 @@ import { UserRegisterOutputDto } from './dto/user-register-output.dto';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { AccountService } from '../account/account.service';
 import { Currency } from '../account/dto/create-account.dto';
-import { GetAccountOutputDto } from '../account/dto/get-account-output.dto';
 import { UserDto } from './dto/user.dto';
 
 @Injectable()
@@ -43,7 +42,7 @@ export class UserService {
 
             return plainToClass(UserDto, {
                 email: existedUser.email,
-                account: existedUser.accounts.map((account) => ({
+                accounts: existedUser.accounts.map((account) => ({
                     balance: account.balance,
                     currency: account.currency,
                 })),
