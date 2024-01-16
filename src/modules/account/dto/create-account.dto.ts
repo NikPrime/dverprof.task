@@ -15,10 +15,12 @@ export class CreateAccountDto {
 
     @ApiProperty()
     @Min(0)
+    @IsNotEmpty()
     @IsNumber()
     balance: number;
 
     @ApiProperty()
     @IsEnum(Currency)
+    @IsNotEmpty()
     currency: Currency;
 }

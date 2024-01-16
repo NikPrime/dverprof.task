@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { UserRegisterInputDto } from './dto/user-register-input.dto';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
@@ -8,6 +8,8 @@ import { UserRegisterOutputDto } from './dto/user-register-output.dto';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { AccountService } from '../account/account.service';
 import { Currency } from '../account/dto/create-account.dto';
+import { GetAccountOutputDto } from '../account/dto/get-account-output.dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -28,6 +30,23 @@ export class UserService {
                 await this.accountService.createAccount({ userId: registeredUser.id, balance: 0, currency: Currency.RUB });
 
                 return plainToClass(UserRegisterOutputDto, { email: registeredUser.email });
+            });
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+
+    async getUserById(id: string) {
+        try {
+            const existedUser = await this.userRepository.getById(id);
+            if (!existedUser) throw new NotFoundException('User does not exists');
+
+            return plainToClass(UserDto, {
+                email: existedUser.email,
+                account: existedUser.accounts.map((account) => ({
+                    balance: account.balance,
+                    currency: account.currency,
+                })),
             });
         } catch (error) {
             throw new InternalServerErrorException(error);

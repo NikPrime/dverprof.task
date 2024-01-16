@@ -4,7 +4,8 @@ import { AccountRepository } from './account.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
 import { PrismaService } from '../../db/prisma/prisma.service';
-import { DebitAccountDto } from './dto/debit-account.dto';
+import { ChangeAccountBalanceDto } from './dto/change-account-balance.dto';
+import { GetAccountOutputDto } from './dto/get-account-output.dto';
 
 @Injectable()
 export class AccountService {
@@ -25,7 +26,7 @@ export class AccountService {
         }
     }
 
-    async debitAccount(debitAccount: DebitAccountDto) {
+    async debitAccount(debitAccount: ChangeAccountBalanceDto) {
         const { userId, amount, currency } = debitAccount;
 
         return this.prisma.$transaction(async () => {
@@ -39,11 +40,48 @@ export class AccountService {
 
             const updatedAccount = await this.accountRepository.update(account.id, amount, false);
 
-            return plainToClass(DebitAccountDto, {
+            return plainToClass(ChangeAccountBalanceDto, {
                 userId: updatedAccount.userId,
                 balance: updatedAccount.balance,
                 currency: updatedAccount.currency,
             });
         });
+    }
+
+    async topUpAccount(topUpAccount: ChangeAccountBalanceDto) {
+        const { userId, amount, currency } = topUpAccount;
+
+        return this.prisma.$transaction(async () => {
+            const account = await this.accountRepository.getAccountByUserCurrency(userId, currency);
+            if (!account) {
+                throw new NotFoundException('Account not found');
+            }
+
+            const updatedAccount = await this.accountRepository.update(account.id, amount, true);
+
+            return plainToClass(ChangeAccountBalanceDto, {
+                userId: updatedAccount.userId,
+                balance: updatedAccount.balance,
+                currency: updatedAccount.currency,
+            });
+        });
+    }
+
+    async getAccountById(id: string) {
+        try {
+            const existedAccount = await this.accountRepository.getById(id);
+            if (!existedAccount) throw new NotFoundException('Account does not exists');
+
+            return plainToClass(GetAccountOutputDto, {
+                id: existedAccount.id,
+                userId: existedAccount.userId,
+                balance: existedAccount.balance,
+                currency: existedAccount.currency,
+                company: existedAccount.company,
+                bankCards: existedAccount.bankCards,
+            });
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
     }
 }

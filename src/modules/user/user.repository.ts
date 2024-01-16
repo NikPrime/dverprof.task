@@ -22,4 +22,13 @@ export class UserRepository {
             },
         });
     }
+
+    getById(id: string) {
+        return this.prisma.user.findUnique({
+            where: { id },
+            include: {
+                accounts: true,
+            },
+        });
+    }
 }
