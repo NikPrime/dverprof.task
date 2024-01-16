@@ -27,38 +27,19 @@ export class AccountService {
         }
     }
 
-    async debitAccount(debitAccount: ChangeAccountBalanceInputDto) {
-        const { userId, amount, currency } = debitAccount;
+    async changeAccountBalance(changeAccountBalanceInput: ChangeAccountBalanceInputDto, increase: boolean) {
+        const { userId, amount, currency } = changeAccountBalanceInput;
 
         return this.prisma.$transaction(async () => {
             const account = await this.accountRepository.getAccountByUserCurrency(userId, currency);
             if (!account) {
                 throw new NotFoundException('Account not found');
             }
-            if (account.balance < amount) {
+            if (!increase && account.balance < amount) {
                 throw new UnprocessableEntityException('Insufficient funds');
             }
 
-            const updatedAccount = await this.accountRepository.update(account.id, amount, false);
-
-            return plainToClass(ChangeAccountBalanceOutputDto, {
-                userId: updatedAccount.userId,
-                balance: updatedAccount.balance,
-                currency: updatedAccount.currency,
-            });
-        });
-    }
-
-    async topUpAccount(topUpAccount: ChangeAccountBalanceInputDto) {
-        const { userId, amount, currency } = topUpAccount;
-
-        return this.prisma.$transaction(async () => {
-            const account = await this.accountRepository.getAccountByUserCurrency(userId, currency);
-            if (!account) {
-                throw new NotFoundException('Account not found');
-            }
-
-            const updatedAccount = await this.accountRepository.update(account.id, amount, true);
+            const updatedAccount = await this.accountRepository.update(account.id, amount, increase);
 
             return plainToClass(ChangeAccountBalanceOutputDto, {
                 userId: updatedAccount.userId,

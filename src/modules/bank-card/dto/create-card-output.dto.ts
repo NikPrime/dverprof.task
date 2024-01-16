@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsUUID, Length } from 'class-validator';
-import { IsNumericString } from '../../../decorators/numeric-string';
+import { IsPositiveNumericString } from '../../../decorators/numeric-string';
 
 export class CreateCardOutputDto {
     @ApiProperty()
@@ -9,7 +9,7 @@ export class CreateCardOutputDto {
     accountId: string;
 
     @ApiProperty()
-    @IsNumericString()
+    @IsPositiveNumericString()
     @Length(12, 12)
     @IsNotEmpty()
     cardNumber: string;
