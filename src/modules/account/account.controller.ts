@@ -21,7 +21,7 @@ export class AccountController {
     })
     @Post('debit')
     async debitAccount(@Body() debitAccountDto: ChangeAccountBalanceInputDto) {
-        return this.accountService.debitAccount(debitAccountDto);
+        return this.accountService.changeAccountBalance(debitAccountDto, false);
     }
 
     @ApiOperation({
@@ -35,7 +35,7 @@ export class AccountController {
     })
     @Post('topup')
     async topUpAccount(@Body() topUpAccountDto: ChangeAccountBalanceInputDto) {
-        return this.accountService.topUpAccount(topUpAccountDto);
+        return this.accountService.changeAccountBalance(topUpAccountDto, true);
     }
 
     @ApiOperation({
