@@ -1,5 +1,4 @@
 import { PrismaService } from '../../db/prisma/prisma.service';
-import { UserRegisterInputDto } from './dto/user-register-input.dto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
